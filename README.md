@@ -1,3 +1,5 @@
+# Investers Nest
+
 Investor Nest is a modern *stock exchange web application* designed to make trading simple, secure, and accessible for everyone.  
 It provides *real-time market data, seamless trading, portfolio management, and community-driven insights*—all in one place.  
 
