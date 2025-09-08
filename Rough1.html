@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Stock Investor - Market Overview</title>
+    <style>
+        /* Dark Mode by Default */
+        :root {
+            --bg-primary: #0b0e11;
+            --bg-secondary: #111827;
+            --card-bg: #1f2937;
+            --text-main: #f1f5f9;
+            --text-secondary: #9ca3af;
+            --primary-color: #38bdf8;
+            --green-color: #22c55e;
+            --red-color: #ef4444;
+            --border-color: #334155;
+        }
+
+        /* Light Mode */
+        body.light-mode {
+            --bg-primary: #e2e8f0;
+            --bg-secondary: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --primary-color: #0f4c75;
+            --green-color: #16a34a;
+            --red-color: #b91c1c;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b); /* Dark blue gradient */
+    color: var(--text-main);
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode override */
+body.light-mode {
+    background: linear-gradient(135deg, #e2e8f0, #f8fafc); /* Soft light gradient */
+}
+
+
+        /* General containers */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background-color: var(--bg-primary);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar .logo {
+            margin-right: 2rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .navbar ul {
+            display: flex;
+            list-style: none;
+            margin-right: auto;
+            padding: 0;
+            margin: 0;
+            gap: 2rem;
+        }
+
+        .navbar ul li {
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar ul li:hover {
+            color: var(--primary-color);
+        }
+
+        .navbar .actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .navbar .actions button {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            color: var(--bg-primary);
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .navbar .actions button:hover {
+            transform: translateY(-2px);
+        }
+
+        .navbar .actions button.login {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .navbar .actions button.login:hover {
+            background-color: var(--primary-color);
+            color: var(--bg-primary);
+        }
+
+        .theme-toggle {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            color: var(--text-main);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs span {
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .tabs span.active {
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .tabs span.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        /* Overview Boxes */
+        .overview-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .box {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .box h4 {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        .box-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .box-item span:first-child {
+            font-weight: 600;
+        }
+
+        .price-red {
+            color: var(--red-color);
+            font-weight: 600;
+        }
+
+        .price-green {
+            color: var(--green-color);
+            font-weight: 600;
+        }
+
+        /* Featured Section */
+        .featured-stocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .featured-card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .featured-card:hover {
+            transform: scale(1.02);
+        }
+
+        .featured-card .stock-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .featured-card .stock-header img {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+        }
+
+        .featured-card .stock-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .featured-card .stock-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .featured-card .stock-change {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* News Section */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-card-content {
+            padding: 1.5rem;
+        }
+
+        .news-card-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .news-card-content p {
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .read-more {
+            display: inline-block;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+
+        /* Categories */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .categories span {
+            padding: 0.5rem 1rem;
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .categories span.active {
+            background-color: var(--primary-color);
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .categories span:hover:not(.active) {
+            background-color: var(--border-color);
+        }
+
+        /* Table */
+        .market-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .market-table th,
+        .market-table td {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .market-table thead {
+            background-color: var(--card-bg);
+        }
+
+        .market-table th {
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        .market-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .market-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .light-mode .market-table tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .token-name {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* .token-name img {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+        } */
+        .token-name img {
+  width: 24px;       /* make the logo smaller */
+  height: 24px;      /* keep consistent height */
+  object-fit: contain; /* keeps aspect ratio */
+  margin-right: 8px; /* space between logo and text */
+  vertical-align: middle; /* align with text */
+  border-radius: 4px; /* optional: makes it slightly rounded */
+}
+.login-btn {
+  display: inline-block;
+  text-decoration: none;
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.25rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--bg-primary);
+  transform: translateY(-2px);
+}
+
+.signup-btn {
+  display: inline-block;
+  text-decoration: none;
+  background-color: var(--primary-color);
+  color: var(--bg-primary);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.signup-btn:hover {
+  background-color: #0056b3; /* darker shade of your primary color */
+  transform: translateY(-2px);
+}
+
+
+
+        /* Footer */
+        footer {
+            background: var(--card-bg);
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .footer-col {
+            flex: 1 1 180px;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .footer-col p {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        footer h3 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        footer ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        footer ul li a {
+            text-decoration: none;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        footer ul li a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .social-icons {
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        .footer-bottom {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .navbar ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .navbar .actions {
+                margin-top: 1rem;
+            }
+
+            .overview-boxes,
+            .featured-stocks,
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-col {
+                flex: 1 1 100%;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">Invester's Nest</div>
+        <ul>
+            <li>Buy Stocks</li>
+            <li>Markets</li>
+            <li>Trade ▾</li>
+            <li>Futures ▾</li>
+            <li>Earn ▾</li>
+            <li>More ▾</li>
+        </ul>
+        <div class="actions">
+            <i id="theme-toggle-btn" class="fas fa-moon theme-toggle"></i>
+            <!-- <button class="login">Log In</button> -->
+             <a href="Login.html" class="login-btn">Log In</a>
+            <!-- <button>Sign Up</button> -->
+             <a href="Signup.html" class="signup-btn">Sign Up</a>
+
+        </div>
+    </header
+
+    <main class="container">
+
+        <div class="tabs">
+            <span class="active">Overview</span>
+            <span>Trading Data</span>
+            <span>AI Select</span>
+            <span>Token Unlock</span>
+        </div>
+        <div class="overview-boxes">
+            <div class="box">
+                <h4>Hot</h4>
+                <div class="box-item">
+                    <span>Vodafone Idea</span> <span>₹15.60 <span class="price-green">+2.35%</span></span>
+                </div>
+                <div class="box-item">
+                    <span>OLA Electric</span> <span>₹72.40 <span class="price-red">-1.12%</span></span>
+                </div>
+            </div>
+
+            <div class="box">
+                <h4>New</h4>
+                <div class="box-item">
+                    <span>Yes Bank</span> <span>₹22.85 <span class="price-green">+0.80%</span></span>
+                </div>
+                <div class="box-item">
+                    <span>Paytm</span> <span>₹410.25 <span class="price-red">-0.75%</span></span>
+                </div>
+            </div>
+
+            <div class="box">
+                <h4>Top Gainer</h4>
+                <div class="box-item">
+                    <span>Zomato</span> <span>₹210.75 <span class="price-green">+0.92%</span></span>
+                </div>
+                <div class="box-item">
+                    <span>Adani Power</span> <span>₹675.90 <span class="price-green">+1.42%</span></span>
+                </div>
+            </div>
+
+            <div class="box">
+                <h4>Top Volume</h4>
+                <div class="box-item">
+                    <span>Vodafone Idea</span> <span>₹15.60 <span class="price-green">+2.35%</span></span>
+                </div>
+                <div class="box-item">
+                    <span>Yes Bank</span> <span>₹22.85 <span class="price-green">+0.80%</span></span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="categories">
+            <span class="active">All</span>
+            <span>BNB Chain</span>
+            <span>Solana</span>
+            <span>RWA</span>
+            <span>Payments</span>
+            <span>AI</span>
+            <span>Gaming</span>
+        </div>
+
+        <table class="market-table">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Price</th>
+                    <th>24h Change</th>
+                    <th>24h Volume</th>
+                    <th>Market Cap</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="token-name"><img src="Images\voda.webp" alt="IDEA"> Vodafone Idea</td>
+                    <td>₹15.60</td>
+                    <td class="price-green">+2.35%</td>
+                    <td>1.25 Cr</td>
+                    <td>₹48,000 Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\finalola.webp" alt="OLA"> OLA Electric</td>
+                    <td>₹72.40</td>
+                    <td class="price-red">-1.12%</td>
+                    <td>2.10 Cr</td>
+                    <td>₹82,300 Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\yes bank.png" alt="YESBANK"> Yes Bank</td>
+                    <td>₹22.85</td>
+                    <td class="price-green">+0.80%</td>
+                    <td>3.42 Cr</td>
+                    <td>₹65,200 Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\Paytm-Logo.wine.png" alt="PAYTM"> Paytm</td>
+                    <td>₹410.25</td>
+                    <td class="price-red">-0.75%</td>
+                    <td>1.05 Cr</td>
+                    <td>₹26,700 Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\Adani-Power-ltd.jpg" alt="ADANIPOWER"> Adani Power</td>
+                    <td>₹675.90</td>
+                    <td class="price-green">+1.42%</td>
+                    <td>85 L</td>
+                    <td>₹2.62 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\860027-zomato-rep-1-1000x600.jpg" alt="ZOMATO"> Zomato</td>
+                    <td>₹210.75</td>
+                    <td class="price-green">+0.92%</td>
+                    <td>2.88 Cr</td>
+                    <td>₹1.82 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\Tata.webp" alt="TATAMOTORS"> Tata Motors</td>
+                    <td>₹950.10</td>
+                    <td class="price-red">-0.55%</td>
+                    <td>1.40 Cr</td>
+                    <td>₹3.12 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\youtube.jpg" alt="Youtube"> Youtube</td>
+                    <td>₹895.60</td>
+                    <td class="price-green">+1.12%</td>
+                    <td>45 L</td>
+                    <td>₹71,800 Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\infosys-logo-PNG.png" alt="INFY"> Infosys</td>
+                    <td>₹1,545.50</td>
+                    <td class="price-red">-0.32%</td>
+                    <td>1.12 Cr</td>
+                    <td>₹6.45 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\reliance.webp" alt="RELIANCE"> Reliance</td>
+                    <td>₹2,525.75</td>
+                    <td class="price-green">+0.42%</td>
+                    <td>1.85 Cr</td>
+                    <td>₹17.1 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\HDFC.webp" alt="HDFC"> HDFC Bank</td>
+                    <td>₹1,620.80</td>
+                    <td class="price-red">-0.25%</td>
+                    <td>1.30 Cr</td>
+                    <td>₹9.12 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\SBI.png" alt="SBI"> SBI</td>
+                    <td>₹595.40</td>
+                    <td class="price-green">+1.05%</td>
+                    <td>1.75 Cr</td>
+                    <td>₹5.28 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\wipro-logo-2022.webp" alt="WIPRO"> Wipro</td>
+                    <td>₹455.65</td>
+                    <td class="price-red">-0.68%</td>
+                    <td>65 L</td>
+                    <td>₹2.49 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\ICICI.jpg" alt="ICICI"> ICICI Bank</td>
+                    <td>₹1,040.75</td>
+                    <td class="price-green">+0.28%</td>
+                    <td>1.95 Cr</td>
+                    <td>₹7.32 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\Axis.jpg" alt="AXIS"> Axis Bank</td>
+                    <td>₹1,130.20</td>
+                    <td class="price-red">-0.45%</td>
+                    <td>1.02 Cr</td>
+                    <td>₹3.65 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\TCS.webp" alt="TCS"> TCS</td>
+                    <td>₹3,820.15</td>
+                    <td class="price-green">+0.55%</td>
+                    <td>75 L</td>
+                    <td>₹14.02 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\appe.jpg" alt="Apple"> Apple</td>
+                    <td>₹1,485.60</td>
+                    <td class="price-red">-0.38%</td>
+                    <td>42 L</td>
+                    <td>₹4.05 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\nvdia.png" alt="Nvdia"> Nvdia</td>
+                    <td>₹345.25</td>
+                    <td class="price-green">+1.15%</td>
+                    <td>80 L</td>
+                    <td>₹3.32 L Cr</td>
+                </tr>
+                <tr>
+                    <td class="token-name"><img src="Images\LIC.webp" alt="LIC"> LIC</td>
+                    <td>₹980.75</td>
+                    <td class="price-green">+0.90%</td>
+                    <td>95 L</td>
+                    <td>₹6.20 L Cr</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </main>
+
+    <footer>
+        <div class="footer-col">
+            <div class="brand-name">Invester's Nest</div>
+            <p>Empowering your investment journey with tools, insights, and guidance for smarter decisions.</p>
+            <div class="social-icons">
+                <a href="#">🌐</a>
+                <a href="#">📘</a>
+                <a href="#">🐦</a>
+                <!-- <a href="#">▶</a> -->
+                <i class="fa-brands fa-x-twitter"></i>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h3>About Us</h3>
+            <ul>
+                <li><a href="#">Our Story</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Press</a></li>
+                <li><a href="#">Legal</a></li>
+                <li><a href="#">Privacy</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Products</h3>
+            <ul>
+                <li><a href="#">Stock Exchange</a></li>
+                <li><a href="#">Market Insights</a></li>
+                <li><a href="#">Investor Academy</a></li>
+                <li><a href="#">Live Analysis</a></li>
+                <li><a href="#">Portfolio Tools</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Services</h3>
+            <ul>
+                <li><a href="#">Affiliate</a></li>
+                <li><a href="#">Referral Program</a></li>
+                <li><a href="#">Trading Reports</a></li>
+                <li><a href="#">Market Data</a></li>
+                <li><a href="#">Risk Advisory</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Support</h3>
+            <ul>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">24/7 Support</a></li>
+                <li><a href="#">Feedback</a></li>
+                <li><a href="#">Trading Rules</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
+    </footer>
+    <div class="footer-bottom">
+        &copy; 2025 Investor Stock. All Rights Reserved.
+    </div>
+
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            if (savedTheme === 'light-mode') {
+                themeToggleBtn.classList.remove('fa-moon');
+                themeToggleBtn.classList.add('fa-sun');
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                themeToggleBtn.classList.remove('fa-sun');
+                themeToggleBtn.classList.add('fa-moon');
+                localStorage.setItem('theme', 'dark-mode');
+            } else {
+                body.classList.add('light-mode');
+                themeToggleBtn.classList.remove('fa-moon');
+                themeToggleBtn.classList.add('fa-sun');
+                localStorage.setItem('theme', 'light-mode');
+            }
+        });
+    </script>
+</body>
+
+</html>
